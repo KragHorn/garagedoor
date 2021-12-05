@@ -6,7 +6,6 @@
 #include "Arduino.h"
 #include "WiFiAP.h"
 //------------setting constants for servers-----------------------------------------------------/
-
 const char* ssid = "";
 const char* password = "";
 const char* ip = "";
