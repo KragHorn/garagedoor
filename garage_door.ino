@@ -6,8 +6,8 @@
 #include "ESPmDNS.h"
 #include "Arduino.h"
 //------------setting constants for servers-----------------------------------------------------/
-const char* ssid = "spoon";
-const char* password = "hyy5-8pc7-8cwq";
+const char* ssid = "";
+const char* password = "";
 const char* ip = "";
 const char* user = ""; 
 const char* topic = "";
