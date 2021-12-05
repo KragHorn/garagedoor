@@ -1,0 +1,101 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.flex_center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bk_image {
+    height: 100%;
+    width: 100%;
+    background-image: url("/garagedoor.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 50% auto;
+}
+
+.main_frame {
+    margin: 3rem auto;
+    height: 500px;
+    width: 500px;
+    background-color: rgba(0, 0, 0, .5);
+    border-radius: 1.5rem;
+}
+
+.icon {
+    color: rgba(255, 255, 255, .6);
+}
+
+#bkBtn:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+.input_frame {
+    width: 100%;
+    padding: 4rem 0;
+    flex-direction: column;
+    color: rgba(255, 255, 255, .6);
+}
+
+.input_frame h1 {
+    margin-bottom: 25px;
+}
+
+.input_txt {
+    width: 80%;
+    margin-top: 1.5rem;
+    padding: .5rem;
+    border-bottom: 1px solid #fff;
+}
+
+.txt_box {
+    width: 100%;
+    margin: 0 5px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: rgba(255, 255, 255, .6);
+    cursor: pointer;
+}
+
+::placeholder {
+    color: rgba(255, 255, 255, .6);
+}
+
+.eye_frame {
+    cursor: pointer;
+}
+
+#eye {
+    display: block;
+}
+
+#eye_slash {
+    display: none;
+}
+
+.btn_frame {
+    width: 80%;
+    height: 30px;
+    margin-top: 2rem;
+}
+
+.input_btn {
+    background-color: transparent;
+    border: 1px solid #fff;
+    border-radius: 2px;
+    color: rgba(255, 255, 255, .6);
+    margin: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.input_btn:hover {
+    background-color: #fff;
+    color: black;
+}
