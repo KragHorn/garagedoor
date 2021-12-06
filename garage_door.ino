@@ -24,13 +24,20 @@ IPAddress AP_netmask(255, 255, 255, 0);
 //--------------------------setup debug---------------------------------------------------------/
 #define debug(x) Serial.print(x)
 #define debugln(x) Serial.println(x)
+
+//---------------------------set door sersor----------------------------------------------------/
+#define door_sensor_pin 19
+int last_door_state;
+int current_door_state;
+
 AsyncWebServer server(80);
 
 
 void setup() {
 
   Serial.begin(115200);
-  startWifi(); //starts ap mode. this prevented reboot loop with out wifi being started???
+  
+  set_AP_mode(); //starts ap mode. this prevented reboot loop with out wifi being started???
   //----------------starts MDNS server--------------------------------------------------/
   if (MDNS.begin("garage.local")) { //esp.local/
     Serial.println("MDNS responder started");
@@ -93,9 +100,17 @@ void setup() {
 
   } )  ;
   read_file("/wifi.json", "ssid", "password", "", "");//called to pull network settings out of spiffs
+  pinMode(door_sensor_pin, INPUT_PULLUP);
+  current_door_state = digitalRead(door_sensor_pin);
 };
-
+//----------------------main loop------------------------------------------------------------/
 void loop() {
+  last_door_state = current_door_state;
+  current_door_state = digitalRead(door_sensor_pin);
+  if (last_door_state != current_door_state){
+    debugln("sending MQTT message");
+    delay(500);
+  }
 
 }
 //------------------write data from web page--------------------------------------------------/
