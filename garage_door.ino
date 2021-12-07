@@ -37,7 +37,7 @@ void setup() {
 
   Serial.begin(115200);
   
-  set_AP_mode(); //starts ap mode. this prevented reboot loop with out wifi being started???
+  set_ap_mode(); //starts ap mode. this prevented reboot loop with out wifi being started???
   //----------------starts MDNS server--------------------------------------------------/
   if (MDNS.begin("garage.local")) { //esp.local/
     Serial.println("MDNS responder started");
