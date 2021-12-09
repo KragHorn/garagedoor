@@ -5,6 +5,7 @@
 #include "ESPmDNS.h"
 #include "Arduino.h"
 #include "WiFiAP.h"
+#include "PubSubClient.h"
 //------------setting constants for servers-----------------------------------------------------/
 const char* ssid = "";
 const char* password = "";
@@ -12,6 +13,10 @@ const char* ip = "";
 const char* user = "";
 const char* topic = "";
 const char* mqtt_password = "";
+const char* mqttServer = "192.168.1.4";
+const int mqttPort = 1883;
+WiFiClient espClient;
+PubSubClient client(espClient);
 
 //-------------access point mode constants------------------------------------------------------/
 const char* AP_mode_ssid = "garage";
@@ -29,14 +34,14 @@ IPAddress AP_netmask(255, 255, 255, 0);
 #define door_sensor_pin 19
 int last_door_state;
 int current_door_state;
-
+const char* door_state;
 AsyncWebServer server(80);
 
 
 void setup() {
 
   Serial.begin(115200);
-  
+
   set_ap_mode(); //starts ap mode. this prevented reboot loop with out wifi being started???
   //----------------starts MDNS server--------------------------------------------------/
   if (MDNS.begin("garage.local")) { //esp.local/
@@ -99,20 +104,34 @@ void setup() {
     setup_json(_setting, "/wifi.json");
 
   } )  ;
-  read_file("/wifi.json", "ssid", "password", "", "");//called to pull network settings out of spiffs
+  read_file("/wifi.json", "ssid", "password", "", "");//called to pull network settings out of spiffs and connect to local network if avalible
+  start_mqtt();
+
   pinMode(door_sensor_pin, INPUT_PULLUP);
   current_door_state = digitalRead(door_sensor_pin);
 };
 //----------------------main loop------------------------------------------------------------/
 void loop() {
+  if (!client.connected()) {
+    start_mqtt();
+  }
+  client.loop();
   last_door_state = current_door_state;
   current_door_state = digitalRead(door_sensor_pin);
-  if (last_door_state != current_door_state){
-    debugln("sending MQTT message");
-    delay(500);
+  if (current_door_state == 0) {
+    door_state = "closed";
   }
-
+  else {
+    door_state = "open";
+  }
+  if (last_door_state != current_door_state) {
+    debugln("sending MQTT message");
+    client.publish("homeassistant/cover/garage_door", door_state);
+  }
+  delay(500);
+  
 }
+
 //------------------write data from web page--------------------------------------------------/
 String setup_json(String _data, String my_file) {
   File fileToWrite = SPIFFS.open(my_file, "w");
@@ -148,6 +167,7 @@ void read_file(String new_file, String w, String x, String y, String z) {
     password = doc[x];
 
     startWifi();
+
   }
 
 };
@@ -179,7 +199,7 @@ void set_ap_mode() {
   Serial.print("IP address: ");
   debugln(WiFi.softAPIP());
 
-}
+};
 //----------------------start wifi station mode(connect to home network)-------------------------/
 
 void set_station_mode() {
@@ -219,4 +239,47 @@ void set_station_mode() {
     }
   }
 
+};
+// -------------------------starting mqtt------------------------------------------------ /
+void start_mqtt() {
+  client.setServer("192.168.1.4", 1883);
+  client.setCallback(callback);
+  while (!client.connected()) {
+    Serial.println("Connecting to MQTT...");
+
+    if (client.connect("ESP32Client", "mqtt", "mqtt" )) {
+
+      Serial.println("connected");
+
+    } else {
+
+      Serial.print("failed with state ");
+      Serial.print(client.state());
+      delay(2000);
+
+    }
+  }
+  client.publish("homeassistant/cover/garage_door/config", "");
+client.subscribe("homeassistant/cover/garage_door");
+};
+void callback(char* topic, byte* message, unsigned int length) {
+  Serial.print("Message arrived on topic: ");
+  Serial.print(topic);
+  Serial.print(". Message: ");
+  String messageTemp;
+  
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)message[i]);
+    messageTemp += (char)message[i];
+  }
+  Serial.println();
+
+  // Feel free to add more if statements to control more GPIOs with MQTT
+
+  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
+  // Changes the output state according to the message
+  if (String(topic) == "esp32/output") {
+    Serial.print("Changing output to ");
+
+  }
 }
