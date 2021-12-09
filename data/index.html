@@ -7,49 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Garage Door Opener</title>
     <link rel="stylesheet" href="style.css" />
+    <script defer src="fontawesome.js"></script>
+    <script defer src="solid.js"></script>
+    <script defer src="script.js"></script>
 </head>
 
 <body class="flex_center">
-
-
     <div class="bk_image">
         <div class="main_frame">
-
-            <form class="input_frame flex_center" autocomplete="off">
-
-                <h1 class="icon">Network Settings</h1>
-                <div class="input_txt flex_center">
-                    <span class="input_icon">
-                <i class="fas fa-wifi icon"></i> 
-            </span>
-                    <input type="text" class="txt_box" id="ssid" placeholder="SSID">
-
-                </div>
-                <div class="input_txt flex_center">
-                    <span class="input_icon">
-                <i class="fa fa-key icon "></i>
-                </span>
-                    <input type="password" class="txt_box" id="password" placeholder="PASSWORD">
-                    <span class="eye_frame" id="show_hide_password">
-                        <i id="eye" class="fa fa-eye icon"></i>
-                        <i id="eye_slash" class="fa fa-eye-slash icon"></i>
-                      </span>
-                </div>
-                <div class="btn_frame flex_center">
-                    <input type="button" class="input_btn" value="MQTT" id="mqtt_btn" onclick="location.href='mqtt.html'">
-                    <input type="button" class="input_btn" value="CLEAR" id="clr_btn" onclick="clear_field('ssid', 'password')">
-                    <input type="button" class="input_btn" value="SUBMIT" id="sub_bn" onclick="setup_network(ssid.value, password.value)">
-                </div>
-
-            </form>
+            <div class="garage_icon_closed flex_center icon">
+                <svg style="width:32rem;height:25rem" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22 9V20H20V11H4V20H2V9L12 5L22 9M19 12H5V14H19V12M19 18H5V20H19V18M19 15H5V17H19V15Z" />
+                </svg>
+            </div>
+            <div class="garage_icon_open flex_center icon">
+                <svg style="width:200px;height:200px" viewBox="0 0 100 100">
+                    <path fill="currentColor" d="M22 9V20H20V11H4V20H2V9L12 5L22 9M19 12H5V14H19V12Z" />
+                </svg>
+            </div>
+            <div class="btn_frame flex_center">
+                <input type="button" class="input_btn" value="NETWORK" id="index_btn" onclick="location.href='network.html'">
+                <input type="button" class="input_btn" value="MQTT" id="mqtt_btn" onclick="location.href='mqtt.html'">
+            </div>
         </div>
-
-
     </div>
-    </div>
-    <script defer src="fontawesome.js"></script>
-    <script defer src="solid.js"></script>
-    <script src="script.js"></script>
 </body>
 
 </html>

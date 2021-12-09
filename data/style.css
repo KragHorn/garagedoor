@@ -21,14 +21,24 @@
 
 .main_frame {
     margin: 3rem auto;
-    height: 500px;
-    width: 500px;
+    height: 32rem;
+    width: 32rem;
     background-color: rgba(0, 0, 0, .5);
     border-radius: 1.5rem;
 }
 
 .icon {
     color: rgba(255, 255, 255, .6);
+}
+
+.garage_icon_closed {
+    display: block;
+    height: 75%;
+}
+
+.garage_icon_open {
+    display: none;
+    height: 75%;
 }
 
 #bkBtn:hover {
@@ -80,7 +90,7 @@
 }
 
 .btn_frame {
-    width: 80%;
+    width: 100%;
     height: 30px;
     margin-top: 2rem;
 }

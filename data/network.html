@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="style.css" />
     <script defer src="fontawesome.js"></script>
     <script defer src="solid.js"></script>
-    <script src="script.js"></script>
+    <script defer src="script.js"></script>
+
 </head>
 
 <body class="flex_center">
@@ -22,22 +23,10 @@
 
                 <h1 class="icon">Network Settings</h1>
                 <div class="input_txt flex_center">
-
                     <span class="input_icon">
                 <i class="fas fa-wifi icon"></i> 
-                   </span>
-                    <label class="mqtt_label" id="mqtt_label" for="mqtt_ip1"></label>
-
-                    <input type="text" class="txt_box mqtt_input" id="mqtt" placeholder="MQTT ip address:port" onkeyup="clean('mqtt')" onkeydown="clean('mqtt')" />
-
-
-
-                </div>
-                <div class="input_txt flex_center">
-                    <span class="input_icon">
-                        <i class="fas fa fa-user icon"></i>
-                    </span>
-                    <input type="text" class="txt_box" id="user" placeholder="User Name">
+            </span>
+                    <input type="text" class="txt_box" id="ssid" placeholder="SSID">
 
                 </div>
                 <div class="input_txt flex_center">
@@ -50,18 +39,11 @@
                         <i id="eye_slash" class="fa fa-eye-slash icon"></i>
                       </span>
                 </div>
-                <div class="input_txt flex_center">
-                    <span class="input_icon">
-                <i class="fas fa-project-diagram icon "></i>
-                </span>
-                    <input type="text" class="txt_box" id="topic" placeholder="MQTT Topic defult = home/garage/">
-                    </span>
-                </div>
                 <div class="btn_frame flex_center">
                     <input type="button" class="input_btn" value="MAIN" id="main_btn" onclick="location.href='/'">
-                    <input type="button" class="input_btn" value="NETWORK" id="index_btn" onclick="location.href='network.html'">
-                    <input type="button" class="input_btn" value="CLEAR" id="clr_btn" onclick="clear_field('mqtt','user','topic', 'password')">
-                    <input type="button" class="input_btn" value="SUBMIT" id="sub_bn" onclick="setup_mqtt(mqtt.value,user.value,topic.value,password.value)">
+                    <input type="button" class="input_btn" value="MQTT" id="mqtt_btn" onclick="location.href='mqtt.html'">
+                    <input type="button" class="input_btn" value="CLEAR" id="clr_btn" onclick="clear_field('ssid', 'password')">
+                    <input type="button" class="input_btn" value="SUBMIT" id="sub_bn" onclick="setup_network(ssid.value, password.value)">
                 </div>
 
             </form>
