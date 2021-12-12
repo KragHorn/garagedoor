@@ -32,6 +32,8 @@ IPAddress AP_netmask(255, 255, 255, 0);
 
 //---------------------------set door sersor----------------------------------------------------/
 #define door_sensor_pin 19
+#define opener_pin 22
+#define light_pin 21
 int last_door_state;
 int current_door_state;
 const char* door_state;
@@ -54,7 +56,42 @@ void setup() {
   };
   //----------------------handles webpage requests and pulls pages from SPIFFS----------------------/
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send(SPIFFS, "/index.html", "text/html");
+    int paramsNr = request->params();
+    Serial.println(paramsNr);
+    String param_value;
+    String door_pos;
+    String door_relay;
+    for (int i = 0; i < paramsNr; i++) {
+
+      AsyncWebParameter* p = request->getParam(i);
+      Serial.print("Param name: ");
+      Serial.println(p->name());
+      Serial.print("Param value: ");
+      Serial.println(p->value());
+      Serial.println("------");
+      param_value = p->name();
+      const char* door_pos(param_value.c_str());
+      debugln("-----------");
+      request->send(200, door_pos, "text/plain");
+    }
+    debugln("door_pos:");
+    debug(param_value);
+    if (param_value == "door_open") {
+      digitalWrite(opener_pin, HIGH);
+      delay(200);
+      digitalWrite(opener_pin, LOW);
+    }
+    else if (param_value == "door_closed") {
+      digitalWrite(opener_pin, HIGH);
+      delay(200);
+      digitalWrite(opener_pin, LOW);
+    }
+
+    request->send(SPIFFS, "/index.html" , "text/html");
+
+  });
+  server.on("/network.html", HTTP_GET, [](AsyncWebServerRequest * request) {
+    request->send(SPIFFS, "/network.html", "text/html");
   });
   server.on("/mqtt.html", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/mqtt.html", "text/html");
@@ -79,6 +116,9 @@ void setup() {
   });
   server.on("/garagedoor.jpg", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/garagedoor.jpg", "text/css");
+  });
+  server.on("/garage_state", HTTP_GET, [](AsyncWebServerRequest * request) {
+    request->send(200, "text/plain", garage_state().c_str());
   });
   server.begin();
   //----------------------------- post from webpage--------------------------------/
@@ -108,6 +148,8 @@ void setup() {
   start_mqtt();
 
   pinMode(door_sensor_pin, INPUT_PULLUP);
+  pinMode(opener_pin, OUTPUT);
+  pinMode(light_pin, OUTPUT);
   current_door_state = digitalRead(door_sensor_pin);
 };
 //----------------------main loop------------------------------------------------------------/
@@ -116,6 +158,11 @@ void loop() {
     start_mqtt();
   }
   client.loop();
+  garage_state();
+
+}
+//------------------door state----------------------------------------------------------------/
+String garage_state() {
   last_door_state = current_door_state;
   current_door_state = digitalRead(door_sensor_pin);
   if (current_door_state == 0) {
@@ -124,14 +171,14 @@ void loop() {
   else {
     door_state = "open";
   }
+  
   if (last_door_state != current_door_state) {
     debugln("sending MQTT message");
     client.publish("homeassistant/cover/garage_door", door_state);
   }
+  return door_state;
   delay(500);
-  
 }
-
 //------------------write data from web page--------------------------------------------------/
 String setup_json(String _data, String my_file) {
   File fileToWrite = SPIFFS.open(my_file, "w");
@@ -260,14 +307,14 @@ void start_mqtt() {
     }
   }
   client.publish("homeassistant/cover/garage_door/config", "");
-client.subscribe("homeassistant/cover/garage_door");
+  client.subscribe("homeassistant/cover/garage_door");
 };
 void callback(char* topic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.print(topic);
   Serial.print(". Message: ");
   String messageTemp;
-  
+
   for (int i = 0; i < length; i++) {
     Serial.print((char)message[i]);
     messageTemp += (char)message[i];
@@ -276,7 +323,7 @@ void callback(char* topic, byte* message, unsigned int length) {
 
   // Feel free to add more if statements to control more GPIOs with MQTT
 
-  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
+  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off".
   // Changes the output state according to the message
   if (String(topic) == "esp32/output") {
     Serial.print("Changing output to ");

@@ -7,9 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Garage Door Opener</title>
     <link rel="stylesheet" href="style.css" />
-    <script defer src="fontawesome.js"></script>
-    <script defer src="solid.js"></script>
-    <script defer src="script.js"></script>
+
 
 </head>
 
@@ -42,7 +40,7 @@
                 <div class="btn_frame flex_center">
                     <input type="button" class="input_btn" value="MAIN" id="main_btn" onclick="location.href='/'">
                     <input type="button" class="input_btn" value="MQTT" id="mqtt_btn" onclick="location.href='mqtt.html'">
-                    <input type="button" class="input_btn" value="CLEAR" id="clr_btn" onclick="clear_field('ssid', 'password')">
+                    <input type="button" class="input_btn" value="CLEAR" id="clr_btn" onclick="clear_field('ssid ', 'password ')">
                     <input type="button" class="input_btn" value="SUBMIT" id="sub_bn" onclick="setup_network(ssid.value, password.value)">
                 </div>
 
@@ -52,7 +50,9 @@
 
     </div>
     </div>
-
+    <script defer src="fontawesome.js"></script>
+    <script defer src="solid.js"></script>
+    <script defer src="script.js"></script>
 </body>
 
 </html>

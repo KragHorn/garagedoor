@@ -1,5 +1,7 @@
 // event listner
 document.getElementById('show_hide_password').addEventListener("click", () => show_password('password', 'eye', 'eye_slash'))
+document.getElementById('door_closed').addEventListener("click", () => operate_door('door_open', 'door_closed'))
+document.getElementById('door_open').addEventListener("click", () => operate_door('door_closed', 'door_open'))
 
 
 // show/hide password 
@@ -24,6 +26,18 @@ function clean(e) {
     var regex = /[^0-9.:]/gi;
     textfield.value = textfield.value.replace(regex, "");
 }
+
+function operate_door(_visable, _invisable) {
+    document.getElementById(_visable).style.display = "block";
+    document.getElementById(_invisable).style.display = "none";
+    _url = '/?' + _visable;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', _url, true);
+    xhr.send()
+
+}
+
+
 // setup JSON for SSID
 function setup_network(_ssid, _password) {
     var ssid_data = {
@@ -36,12 +50,13 @@ function setup_network(_ssid, _password) {
 }
 
 // setup JSON for MQTT
-function setup_mqtt(_mqtt, _user, _topic, _password) {
+function setup_mqtt(_mqtt, _port, _user, _topic, _password) {
     if (_topic == "") {
         _topic = "home/garage/"
     }
     var mqtt_data = {
         ip: _mqtt,
+        port: _port,
         user: _user,
         topic: _topic,
         password: _password
@@ -75,3 +90,20 @@ function send_json(data, _file) {
     xhr.open('POST', _url, true);
     xhr.send(JSON.stringify(data))
 }
+setInterval(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            if (this.responseText == "open") {
+                document.getElementById('door_open').style.display = 'block';
+                document.getElementById('door_closed').style.display = 'none';
+            } else {
+                document.getElementById('door_closed').style.display = 'block';
+                document.getElementById('door_open').style.display = 'none';
+            }
+        }
+    };
+    xhr.open("GET", "/garage_state", true);
+    xhr.send();
+}, 10000);

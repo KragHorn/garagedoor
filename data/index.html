@@ -7,30 +7,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Garage Door Opener</title>
     <link rel="stylesheet" href="style.css" />
-    <script defer src="fontawesome.js"></script>
-    <script defer src="solid.js"></script>
-    <script defer src="script.js"></script>
+
 </head>
 
 <body class="flex_center">
+    <span class="eye_frame" id="show_hide_password"></span>
     <div class="bk_image">
         <div class="main_frame">
-            <div class="garage_icon_closed flex_center icon">
+            <div class="garage_icon_closed flex_center icon door_icon" id="door_closed">
                 <svg style="width:32rem;height:25rem" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M22 9V20H20V11H4V20H2V9L12 5L22 9M19 12H5V14H19V12M19 18H5V20H19V18M19 15H5V17H19V15Z" />
                 </svg>
             </div>
-            <div class="garage_icon_open flex_center icon">
-                <svg style="width:200px;height:200px" viewBox="0 0 100 100">
+            <div class="garage_icon_open flex_center icon doorIcon" id="door_open">
+                <svg style="width:32rem;height:25rem" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M22 9V20H20V11H4V20H2V9L12 5L22 9M19 12H5V14H19V12Z" />
                 </svg>
             </div>
             <div class="btn_frame flex_center">
-                <input type="button" class="input_btn" value="NETWORK" id="index_btn" onclick="location.href='network.html'">
+                <input type="button" class="input_btn" value="MAIN" id="main_btn" style="display: none;" onclick="location.href='/'">
+                <input type="button" class="input_btn" value="NETWORK" id="network_btn" onclick="location.href='network.html'">
                 <input type="button" class="input_btn" value="MQTT" id="mqtt_btn" onclick="location.href='mqtt.html'">
             </div>
         </div>
     </div>
+
+
+    <script defer src="script.js"></script>
 </body>
 
 </html>
