@@ -9,12 +9,12 @@
 //------------setting constants for servers-----------------------------------------------------/
 const char* ssid = "";
 const char* password = "";
-const char* ip = "";
+const char* ip = "192.168.1.4";
+const char* mqttPort = "1883";
 const char* user = "";
 const char* topic = "";
 const char* mqtt_password = "";
-const char* mqttServer = "192.168.1.4";
-const int mqttPort = 1883;
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -171,7 +171,7 @@ String garage_state() {
   else {
     door_state = "open";
   }
-  
+
   if (last_door_state != current_door_state) {
     debugln("sending MQTT message");
     client.publish("homeassistant/cover/garage_door", door_state);
@@ -289,7 +289,11 @@ void set_station_mode() {
 };
 // -------------------------starting mqtt------------------------------------------------ /
 void start_mqtt() {
-  client.setServer("192.168.1.4", 1883);
+ // unsigned int i = reinterpret_cast<unsigned int>( mqttPort);
+  int i = atoi(mqttPort); 
+  debugln("I-");
+      debug(i);
+  client.setServer(ip, i);
   client.setCallback(callback);
   while (!client.connected()) {
     Serial.println("Connecting to MQTT...");
@@ -301,6 +305,8 @@ void start_mqtt() {
     } else {
 
       Serial.print("failed with state ");
+      debugln("I-");
+      debug(i);
       Serial.print(client.state());
       delay(2000);
 

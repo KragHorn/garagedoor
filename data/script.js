@@ -52,7 +52,7 @@ function setup_network(_ssid, _password) {
 // setup JSON for MQTT
 function setup_mqtt(_mqtt, _port, _user, _topic, _password) {
     if (_topic == "") {
-        _topic = "home/garage/"
+        _topic = "homeassistant/cover/garage/"
     }
     var mqtt_data = {
         ip: _mqtt,
@@ -62,21 +62,23 @@ function setup_mqtt(_mqtt, _port, _user, _topic, _password) {
         password: _password
     };
     send_json(mqtt_data, '/mqtt');
-    clear_field('mqtt', 'user', 'topic', 'password');
+    clear_field('mqtt', 'port', 'user', 'topic', 'password');
 
 }
 // clear text field
-function clear_field(i, x, y, z) {
-    if (y != null) {
+function clear_field(i, j, x, y, z) {
+    if (x != null) {
         document.getElementById(i).value = "";
+        document.getElementById(j).value = "";
         document.getElementById(x).value = "";
         document.getElementById(y).value = "";
         document.getElementById(z).value = "";
         return
     };
     document.getElementById(i).value = "";
-    document.getElementById(x).value = "";
+    document.getElementById(j).value = "";
     i = "";
+    j = "";
     x = "";
     y = "";
     z = "";
@@ -106,4 +108,4 @@ setInterval(function() {
     };
     xhr.open("GET", "/garage_state", true);
     xhr.send();
-}, 10000);
+}, 1000);
