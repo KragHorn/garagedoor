@@ -208,12 +208,17 @@ void read_file(String new_file, String v, String w, String x, String y, String z
     return;
   }
   fileToRead.close();
-  if (y != "") {
+  if (x != "") {
     ip = doc[v]; // "192.16.15.46:8945"
     mqttPort = doc[w];
+    debugln("-----------------");
+    debugln("mqtt port=");
+    debug(mqttPort);
+    debugln("-----------------");
     user = doc[x]; // "craig"
     topic = doc[y]; // "home/garage/"
     mqtt_password = doc[z]; // "mqtt"
+    start_mqtt();
   } else {
     ssid = doc[v];
     password = doc[w];
@@ -297,8 +302,10 @@ void start_mqtt() {
   read_file("mqtt.json" , "ip", "port", "user", "topic", "password");
 
   int i = atoi(mqttPort);
+  debugln("------------------------------");
   debugln("I-");
   debug(i);
+  debugln("-----------------------");
   client.setServer(ip, i);
   client.setCallback(callback);
   while (!client.connected()) {
