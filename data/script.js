@@ -23,7 +23,7 @@ function show_password(password, eye, eye_slash) {
 
 function clean(e) {
     var textfield = document.getElementById(e);
-    var regex = /[^0-9.:]/gi;
+    var regex = /[^0-9.:/]/gi;
     textfield.value = textfield.value.replace(regex, "");
 }
 
@@ -62,12 +62,12 @@ function setup_mqtt(_mqtt, _port, _user, _topic, _password) {
         password: _password
     };
     send_json(mqtt_data, '/mqtt');
-    clear_field('mqtt', 'port', 'user', 'topic', 'password');
+    clear_field('mqtt', 'mqtt_port', 'user', 'topic', 'password');
 
 }
 // clear text field
 function clear_field(i, j, x, y, z) {
-    if (x != null) {
+    if (x != "") {
         document.getElementById(i).value = "";
         document.getElementById(j).value = "";
         document.getElementById(x).value = "";
