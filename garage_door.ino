@@ -9,8 +9,8 @@
 //------------setting constants for servers-----------------------------------------------------/
 const char* ssid = "";
 const char* password = "";
-const char* ip = "192.168.1.4";
-const char* mqttPort = "1883";
+const char* ip = "";
+const char* mqttPort = "";
 const char* user = "";
 const char* topic = "";
 const char* mqtt_password = "";
@@ -144,7 +144,7 @@ void setup() {
     setup_json(_setting, "/wifi.json");
 
   } )  ;
-  read_file("/wifi.json", "ssid", "password", "", "");//called to pull network settings out of spiffs and connect to local network if avalible
+  read_file("/wifi.json", "ssid", "password", "", "", ""); //called to pull network settings out of spiffs and connect to local network if avalible
   start_mqtt();
 
   pinMode(door_sensor_pin, INPUT_PULLUP);
@@ -186,12 +186,16 @@ String setup_json(String _data, String my_file) {
   };
   fileToWrite.close();
   if (my_file == "/mqtt.json") {
-    read_file(my_file, "ip", "user", "topic", "password");
+    read_file(my_file, "ip", "port", "user", "topic", "password");
+
+  } else {
+    read_file(my_file, "ssid", "password", "", "", "");
+
   }
-  read_file(my_file, "ssid", "password", "", "");
 };
 //------------------read data from SPIFFS------------------------------------------------------/
-void read_file(String new_file, String w, String x, String y, String z) {
+void read_file(String new_file, String v, String w, String x, String y, String z) {
+      
   File fileToRead = SPIFFS.open(new_file);
 
   StaticJsonDocument<192> doc;
@@ -205,13 +209,14 @@ void read_file(String new_file, String w, String x, String y, String z) {
   }
   fileToRead.close();
   if (y != "") {
-    ip = doc[w]; // "192.16.15.46:8945"
+    ip = doc[v]; // "192.16.15.46:8945"
+    mqttPort = doc[w];
     user = doc[x]; // "craig"
     topic = doc[y]; // "home/garage/"
     mqtt_password = doc[z]; // "mqtt"
   } else {
-    ssid = doc[w];
-    password = doc[x];
+    ssid = doc[v];
+    password = doc[w];
 
     startWifi();
 
@@ -289,16 +294,17 @@ void set_station_mode() {
 };
 // -------------------------starting mqtt------------------------------------------------ /
 void start_mqtt() {
- // unsigned int i = reinterpret_cast<unsigned int>( mqttPort);
-  int i = atoi(mqttPort); 
+  read_file("mqtt.json" , "ip", "port", "user", "topic", "password");
+
+  int i = atoi(mqttPort);
   debugln("I-");
-      debug(i);
+  debug(i);
   client.setServer(ip, i);
   client.setCallback(callback);
   while (!client.connected()) {
     Serial.println("Connecting to MQTT...");
 
-    if (client.connect("ESP32Client", "mqtt", "mqtt" )) {
+    if (client.connect("ESP32Client", user, mqtt_password )) {
 
       Serial.println("connected");
 
@@ -312,8 +318,8 @@ void start_mqtt() {
 
     }
   }
-  client.publish("homeassistant/cover/garage_door/config", "");
-  client.subscribe("homeassistant/cover/garage_door");
+  client.publish(topic, "");
+  client.subscribe(topic);
 };
 void callback(char* topic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
