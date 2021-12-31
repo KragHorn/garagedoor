@@ -52,7 +52,7 @@ function setup_network(_ssid, _password) {
 // setup JSON for MQTT
 function setup_mqtt(_mqtt, _port, _user, _topic, _password) {
     if (_topic == "") {
-        _topic = "homeassistant/cover/garage/"
+        _topic = "homeassistant/cover/garage"
     }
     var mqtt_data = {
         ip: _mqtt,
