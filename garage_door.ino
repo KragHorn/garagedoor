@@ -37,6 +37,8 @@ IPAddress AP_netmask(255, 255, 255, 0);
 #define door_sensor_pin 19
 #define opener_pin 22
 #define light_pin 21
+#define led_pin 2
+bool ledStatus = false;
 int last_door_state;
 int current_door_state;
 const char *door_state;
@@ -174,6 +176,7 @@ void setup()
   pinMode(door_sensor_pin, INPUT_PULLUP);
   pinMode(opener_pin, OUTPUT);
   pinMode(light_pin, OUTPUT);
+  pinMode(led_pin, OUTPUT);
   digitalWrite(opener_pin, HIGH);
   digitalWrite(light_pin, HIGH);
   current_door_state = digitalRead(door_sensor_pin);
@@ -182,6 +185,11 @@ void setup()
 //----------------------main loop------------------------------------------------------------/
 void loop()
 {
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    startWifi();
+    toggleLED();
+  }
   if (!client.connected())
   {
     mqtt_read;
@@ -190,6 +198,18 @@ void loop()
 
   garage_state();
   ArduinoOTA.handle();
+}
+void toggleLED()
+{
+  if (!ledStatus)
+  {
+    digitalWrite(led_pin, HIGH);
+    ledStatus = true;
+  }
+  digitalWrite(led_pin, LOW);
+  ledStatus = false;
+  delay(1000);
+  return;
 }
 //------------------door state----------------------------------------------------------------/
 String garage_state()
