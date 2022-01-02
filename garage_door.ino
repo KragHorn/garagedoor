@@ -15,7 +15,8 @@ const char *mqttPort = "";
 const char *user = "";
 const char *mqtt_topic = "";
 const char *mqtt_password = "";
-
+unsigned long previousMillis = 0;
+const long interval = 30000;
 WiFiClient espClient;
 PubSubClient client(espClient);
 #define mqtt_read read_file("/mqtt.json", "ip", "port", "user", "topic", "password")
@@ -50,10 +51,7 @@ void setup()
 
   set_ap_mode(); // starts ap mode. this prevented reboot loop with out wifi being started???
   //----------------starts MDNS server--------------------------------------------------/
-  if (MDNS.begin("garage"))
-  { // esp.local/
-    Serial.println("MDNS responder started");
-  };
+
   ArduinoOTA
       .onStart([]()
                {
@@ -111,9 +109,9 @@ void setup()
               debug(param_value);
               if (param_value == "door_open")
               {
-                digitalWrite(opener_pin, HIGH);
-                delay(200);
                 digitalWrite(opener_pin, LOW);
+                delay(200);
+                digitalWrite(opener_pin, HIGH);
               }
               else if (param_value == "door_closed")
               {
@@ -176,6 +174,8 @@ void setup()
   pinMode(door_sensor_pin, INPUT_PULLUP);
   pinMode(opener_pin, OUTPUT);
   pinMode(light_pin, OUTPUT);
+  digitalWrite(opener_pin, HIGH);
+  digitalWrite(light_pin, HIGH);
   current_door_state = digitalRead(door_sensor_pin);
 };
 
@@ -210,6 +210,12 @@ String garage_state()
     debugln("sending MQTT message");
     debugln(mqtt_topic);
     client.publish("homeassistant/cover/garage", door_state);
+  }
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval)
+  {
+    client.publish("homeassistant/cover/garage", door_state);
+    previousMillis = currentMillis;
   }
   return door_state;
   delay(500);
@@ -281,6 +287,12 @@ void startWifi()
     debugln("call set_ap_mode");
     set_ap_mode();
   }
+  if (!MDNS.begin("garage"))
+  { // esp.local/
+    Serial.println("MDNS responder not started");
+  };
+  MDNS.addService("_http", "_tcp", 80);
+  MDNS.addServiceTxt("_http", "_tcp", "board", "ESP32");
 };
 
 //---------------------start wifi ap mode--------------------------------------------------------/
@@ -390,8 +402,8 @@ void callback(char *topic, byte *message, unsigned int length)
   Serial.println(messageTemp);
   if (messageTemp == "toggle")
   {
-    digitalWrite(opener_pin, HIGH);
-    delay(500);
     digitalWrite(opener_pin, LOW);
+    delay(500);
+    digitalWrite(opener_pin, HIGH);
   }
 }
